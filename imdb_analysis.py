@@ -1,5 +1,4 @@
 import re
-
 import pymysql
 import requests
 from bs4 import BeautifulSoup
@@ -195,7 +194,7 @@ def store_director_data_in_db(movie):
         print("This Director direct movie ALREADY EXISTED!!!")
 
 
-def get_movie_data(movie_data):
+def get_movie_detail_data(movie_data):
     url = "http://www.imdb.com" + movie_data['movie_link']
     try:
         response = requests.get(url)
@@ -211,9 +210,9 @@ def get_movie_data(movie_data):
             movie_data['director_name'] = director_name.string
             store_director_data_in_db(movie_data)
             #parse Cast's data
-            # cast = soup.select('table.cast_list tr[class!="castlist_label"]')
-            # for actor in get_cast_data(cast):
-            #     store_actor_data_to_db(actor, movie_data)
+            cast = soup.select('table.cast_list tr[class!="castlist_label"]')
+            for actor in get_cast_data(cast):
+                store_actor_data_to_db(actor, movie_data)
 
         else:
             print("GET url of movie Do Not 200 OK!")
@@ -240,7 +239,7 @@ def main():
     try:
         for movie in get_top250_movies_list():
             store_movie_data_to_db(movie)
-            get_movie_data(movie)
+            get_movie_detail_data(movie)
     finally:
         db.close()
 
